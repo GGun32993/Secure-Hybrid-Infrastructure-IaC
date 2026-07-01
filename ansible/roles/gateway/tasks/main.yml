@@ -1,0 +1,210 @@
+---
+# ติดตั้ง WireGuard
+- name: Install WireGuard
+  apt:
+    name: wireguard
+    state: present
+
+# เปิด IP Forwarding ใน Kernel
+- name: Enable IPv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+# โฟลเดอร์เก็บคีย์ VPN
+- name: Create WireGuard keys directory
+  file:
+    path: /etc/wireguard/keys
+    state: directory
+    mode: '0700'
+
+# --- สร้างกุญแจเข้ารหัส VPN ---
+- name: Generate Gateway private key
+  shell: wg genkey
+  args:
+    creates: /etc/wireguard/keys/gateway.key
+  register: gateway_private_key_raw
+
+- name: Save Gateway private key
+  copy:
+    content: "{{ gateway_private_key_raw.stdout }}"
+    dest: /etc/wireguard/keys/gateway.key
+    mode: '0600'
+  when: gateway_private_key_raw.changed
+
+- name: Generate Gateway public key
+  shell: cat /etc/wireguard/keys/gateway.key | wg pubkey
+  args:
+    creates: /etc/wireguard/keys/gateway.pub
+  register: gateway_public_key_raw
+
+- name: Save Gateway public key
+  copy:
+    content: "{{ gateway_public_key_raw.stdout }}"
+    dest: /etc/wireguard/keys/gateway.pub
+    mode: '0644'
+  when: gateway_public_key_raw.changed
+
+- name: Generate Client private key
+  shell: wg genkey
+  args:
+    creates: /etc/wireguard/keys/client.key
+  register: client_private_key_raw
+
+- name: Save Client private key
+  copy:
+    content: "{{ client_private_key_raw.stdout }}"
+    dest: /etc/wireguard/keys/client.key
+    mode: '0600'
+  when: client_private_key_raw.changed
+
+- name: Generate Client public key
+  shell: cat /etc/wireguard/keys/client.key | wg pubkey
+  args:
+    creates: /etc/wireguard/keys/client.pub
+  register: client_public_key_raw
+
+- name: Save Client public key
+  copy:
+    content: "{{ client_public_key_raw.stdout }}"
+    dest: /etc/wireguard/keys/client.pub
+    mode: '0644'
+  when: client_public_key_raw.changed
+
+# --- อ่านคีย์ไปเก็บในตัวแปร ---
+- name: Read keys
+  slurp:
+    src: "{{ item }}"
+  loop:
+    - /etc/wireguard/keys/gateway.key
+    - /etc/wireguard/keys/gateway.pub
+    - /etc/wireguard/keys/client.key
+    - /etc/wireguard/keys/client.pub
+  register: vpn_keys
+
+- name: Set key variables
+  set_fact:
+    gateway_private_key: "{{ vpn_keys.results[0].content | b64decode | trim }}"
+    gateway_public_key: "{{ vpn_keys.results[1].content | b64decode | trim }}"
+    client_private_key: "{{ vpn_keys.results[2].content | b64decode | trim }}"
+    client_public_key: "{{ vpn_keys.results[3].content | b64decode | trim }}"
+
+# --- คอนฟิกไฟล์ระบบ ---
+- name: Generate Server config
+  template:
+    src: wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    owner: root
+    group: root
+    mode: '0600'
+  notify: restart wireguard
+
+# เซฟไฟล์คอนฟิกส่งออกไปให้เครื่องหลัก (Windows)
+- name: Generate Client config
+  template:
+    src: client.conf.j2
+    dest: /vagrant/wg0-client.conf
+    owner: vagrant
+    group: vagrant
+    mode: '0644'
+
+# อนุญาตส่งผ่านข้อมูลในระดับเครือข่าย
+- name: Allow forwarding in UFW
+  lineinfile:
+    path: /etc/default/ufw
+    regexp: '^DEFAULT_FORWARD_POLICY='
+    line: 'DEFAULT_FORWARD_POLICY="ACCEPT"'
+  notify: restart ufw
+
+# เปิดพอร์ต Wireguard VPN
+- name: Allow WireGuard UDP port
+  ufw:
+    rule: allow
+    port: '51820'
+    proto: udp
+
+# เปิดพอร์ต SSH
+- name: Allow SSH
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+
+# สั่งเริ่มใช้งาน WireGuard
+- name: Enable WireGuard service
+  systemd:
+    name: wg-quick@wg0
+    enabled: yes
+    state: started
+
+# ติดตั้ง Prometheus Server สำหรับดึงข้อมูลและทำระบบเฝ้าระวัง
+- name: Install Prometheus Server
+  apt:
+    name: prometheus
+    state: present
+
+# คอนฟิกค่าเป้าหมายการดึงข้อมูลจาก Template
+- name: Configure Prometheus Server
+  template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart prometheus
+
+# เปิดทำงาน Service Prometheus
+- name: Start and enable Prometheus service
+  systemd:
+    name: prometheus
+    state: started
+    enabled: yes
+
+# อนุญาตพอร์ตหน้าเว็บ Prometheus (9090) ใน UFW ให้ตรวจสอบได้
+- name: Allow Prometheus port in UFW
+  ufw:
+    rule: allow
+    port: '9090'
+    proto: tcp
+
+# --- ติดตั้งและตั้งค่า Grafana Server ---
+- name: Ensure APT keyrings directory exists
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Add Grafana GPG key
+  get_url:
+    url: https://apt.grafana.com/gpg.key
+    dest: /etc/apt/keyrings/grafana.key
+    mode: '0644'
+    force: yes
+
+- name: Add Grafana APT repository
+  apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/grafana.key] https://apt.grafana.com stable main"
+    state: present
+    filename: grafana
+
+- name: Install Grafana
+  apt:
+    name: grafana
+    state: present
+    update_cache: yes
+
+- name: Start and enable Grafana service
+  systemd:
+    name: grafana-server
+    state: started
+    enabled: yes
+
+# อนุญาตพอร์ตหน้าเว็บ Grafana (3000) ใน UFW
+- name: Allow Grafana port in UFW
+  ufw:
+    rule: allow
+    port: '3000'
+    proto: tcp

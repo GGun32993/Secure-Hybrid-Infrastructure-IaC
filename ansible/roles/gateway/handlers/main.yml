@@ -1,0 +1,20 @@
+---
+- name: restart wireguard
+  systemd:
+    name: wg-quick@wg0
+    state: restarted
+
+- name: restart ufw
+  service:
+    name: ufw
+    state: restarted
+
+- name: restart prometheus
+  systemd:
+    name: prometheus
+    state: restarted
+
+- name: restart grafana
+  systemd:
+    name: grafana-server
+    state: restarted

@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 10s # ดึงข้อมูลทุกๆ 10 วินาที
+  evaluation_interval: 10s
+
+scrape_configs:
+  # ดึงข้อมูลจากตัวเอง (Prometheus Server)
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # ดึงข้อมูลการทำงานของ Gateway
+  - job_name: 'gateway-node'
+    static_configs:
+      - targets: ['localhost:9100']
+
+  # ดึงข้อมูลการทำงานของ Web Server
+  - job_name: 'web-node'
+    static_configs:
+      - targets: ['10.0.0.11:9100']
+
+  # ดึงข้อมูลการทำงานของ Database Server
+  - job_name: 'db-node'
+    static_configs:
+      - targets: ['10.0.0.12:9100']

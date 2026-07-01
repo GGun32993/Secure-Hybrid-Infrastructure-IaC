@@ -1,0 +1,51 @@
+---
+# ติดตั้ง Nginx
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+
+# เริ่มใช้งาน Nginx
+- name: Start Nginx
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+
+# คัดลอกหน้าเว็บ Portfolio
+- name: Deploy web template
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+# ตั้งค่าบล็อกทราฟฟิกภายนอก
+- name: Set UFW default to deny
+  ufw:
+    direction: incoming
+    policy: deny
+  notify: restart ufw
+
+# เปิดพอร์ต SSH
+- name: Allow SSH
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+
+# เปิดพอร์ต HTTP
+- name: Allow HTTP
+  ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+
+# อนุญาตพอร์ต Node Exporter จาก Gateway เท่านั้น
+- name: Allow Node Exporter from Gateway
+  ufw:
+    rule: allow
+    port: '9100'
+    proto: tcp
+    from_ip: '10.0.0.1'

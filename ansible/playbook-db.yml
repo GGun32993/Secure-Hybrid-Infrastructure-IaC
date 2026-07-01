@@ -1,0 +1,9 @@
+---
+# รันคอนฟิกเครื่อง Database
+- name: Setup Database
+  hosts: all
+  connection: local
+  become: true
+  roles:
+    - common
+    - database

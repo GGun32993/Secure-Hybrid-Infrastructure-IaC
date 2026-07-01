@@ -1,0 +1,9 @@
+---
+# รันคอนฟิกบนเครื่อง Gateway
+- name: Setup Gateway
+  hosts: all
+  connection: local
+  become: true
+  roles:
+    - common
+    - gateway

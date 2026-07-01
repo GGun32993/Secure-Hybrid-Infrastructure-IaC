@@ -1,0 +1,12 @@
+# Vagrant local state directory
+.vagrant/
+
+# WireGuard client configuration containing private keys (Security)
+wg0-client.conf
+
+# Log files
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db

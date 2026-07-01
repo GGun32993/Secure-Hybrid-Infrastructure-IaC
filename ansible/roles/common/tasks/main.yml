@@ -1,0 +1,39 @@
+---
+# อัปเดตลิสต์โปรแกรม
+- name: apt update
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+# ติดตั้งเครื่องมือพื้นฐาน
+- name: Install base tools
+  apt:
+    name:
+      - curl
+      - git
+      - vim
+      - ufw
+      - iptables
+      - traceroute
+      - dnsutils
+      - net-tools
+      - tcpdump
+    state: present
+
+# เปิด Firewall พื้นฐาน
+- name: Enable UFW
+  ufw:
+    state: enabled
+    policy: allow
+
+# ติดตั้ง Node Exporter สำหรับดึงค่าการทำงานส่งต่อให้ Prometheus
+- name: Install Node Exporter
+  apt:
+    name: prometheus-node-exporter
+    state: present
+
+- name: Start and enable Node Exporter service
+  systemd:
+    name: prometheus-node-exporter
+    state: started
+    enabled: yes

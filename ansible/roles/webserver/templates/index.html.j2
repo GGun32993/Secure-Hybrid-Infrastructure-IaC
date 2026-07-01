@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System & Network Engineer | Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-glow: #6366f1;
+            --accent-success: #10b981;
+            --accent-purple: #a855f7;
+            --accent-amber: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            color: var(--text-primary);
+            font-family: 'Noto Sans Thai', 'Outfit', sans-serif;
+            min-height: 100vh;
+            line-height: 1.8;
+            overflow-x: hidden;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* ==========================================
+           Profile Header
+           ========================================== */
+        header {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-glow), var(--accent-purple), var(--accent-amber));
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .profile-title h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff 30%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.3rem;
+            font-family: 'Outfit', 'Noto Sans Thai', sans-serif;
+        }
+
+        .profile-title .name-th {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--accent-glow);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .contact-info {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .badge-contact {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .badge-contact:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--accent-glow);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* Infrastructure Status Widget */
+        .infra-status {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 16px;
+            padding: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-success);
+            animation: pulse 2s infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* ==========================================
+           Content Grid
+           ========================================== */
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            header {
+                padding: 2rem;
+            }
+            .profile-title h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title .en {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ==========================================
+           Skills Section
+           ========================================== */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+        }
+
+        .skill-tag {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 0.45rem 0.9rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .skill-tag:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+            border-color: var(--accent-glow);
+            transform: scale(1.05);
+        }
+
+        .skill-category {
+            font-size: 0.75rem;
+            color: var(--accent-purple);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.5rem;
+            margin-top: 1rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        .skill-category:first-child {
+            margin-top: 0;
+        }
+
+        /* ==========================================
+           Project Section
+           ========================================== */
+        .project-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .project-item:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .project-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .project-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .project-tech {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+        }
+
+        .project-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-highlights {
+            list-style: none;
+            padding: 0;
+        }
+
+        .project-highlights li {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            padding: 0.3rem 0;
+            padding-left: 1.2rem;
+            position: relative;
+        }
+
+        .project-highlights li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent-success);
+        }
+
+        /* ==========================================
+           Topology Diagram
+           ========================================== */
+        .topology-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: #10b981;
+            overflow-x: auto;
+            white-space: pre;
+            margin-top: 1rem;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+            line-height: 1.4;
+        }
+
+        /* ==========================================
+           Timeline (Education/Experience)
+           ========================================== */
+        .timeline-item {
+            border-left: 2px solid var(--accent-glow);
+            padding-left: 1.2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: var(--accent-glow);
+            border-radius: 50%;
+            position: absolute;
+            left: -6px;
+            top: 4px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-item.purple {
+            border-left-color: var(--accent-purple);
+        }
+
+        .timeline-item.purple::before {
+            background: var(--accent-purple);
+        }
+
+        .timeline-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .timeline-sub {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* ==========================================
+           Security Checklist
+           ========================================== */
+        .security-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .security-list li {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .security-list li:last-child {
+            border-bottom: none;
+        }
+
+        .security-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-success);
+            font-weight: 700;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        footer span {
+            color: var(--accent-glow);
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ==========================================
+             Header
+             ========================================== -->
+        <header>
+            <div class="header-content">
+                <div class="profile-title">
+                    <h1>My Portfolio</h1>
+                    <div class="name-th">ชื่อ-นามสกุล ของคุณ</div>
+                    <div class="subtitle">System & Network Engineer</div>
+                    <div class="contact-info">
+                        <span class="badge-contact">📍 กรุงเทพมหานคร</span>
+                        <a href="#" class="badge-contact">🔗 GitHub</a>
+                        <a href="mailto:email@example.com" class="badge-contact">✉️ อีเมล</a>
+                        <span class="badge-contact">📞 0XX-XXX-XXXX</span>
+                    </div>
+                </div>
+                <div class="infra-status">
+                    <div class="status-dot"></div>
+                    <div>
+                        <strong style="color: #10b981;">SYSTEM OPERATIONAL</strong><br>
+                        Node: Web Server<br>
+                        IP: 10.0.0.11<br>
+                        Gateway: 10.0.0.1 (VPN)
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ==========================================
+             Main Grid
+             ========================================== -->
+        <div class="grid">
+
+            <!-- ====== Left Column ====== -->
+            <div>
+
+                <!-- เกี่ยวกับผม -->
+                <section class="card">
+                    <div class="card-title">👋 เกี่ยวกับผม <span class="en">— About Me</span></div>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                        นักศึกษาสาขาวิทยาการคอมพิวเตอร์ (Computer Science) แทร็กเครือข่าย 
+                        มีความสนใจและหลงใหลในการออกแบบระบบโครงสร้างพื้นฐาน (Infrastructure) 
+                        การทำระบบอัตโนมัติ (Automation) และความปลอดภัยของเครือข่าย (Network Security) 
+                        ผมเชื่อว่าระบบที่ดีคือระบบที่สร้างและจัดการได้ด้วยโค้ด
+                    </p>
+                </section>
+
+                <!-- โปรเจกต์หลัก -->
+                <section class="card">
+                    <div class="card-title">🚀 โปรเจกต์หลัก <span class="en">— Featured Project</span></div>
+                    
+                    <div class="project-item">
+                        <div class="project-header">
+                            <div class="project-name">Secure Hybrid Infrastructure IaC</div>
+                            <div class="project-tech">Vagrant / Ansible / WireGuard</div>
+                        </div>
+                        <div class="project-desc">
+                            ระบบโครงสร้างพื้นฐานเครือข่ายที่มีความปลอดภัยสูง สร้างและตั้งค่าทั้งหมดโดยอัตโนมัติผ่านโค้ด (Infrastructure as Code)
+                            เว็บเซิร์ฟเวอร์ที่คุณกำลังดูอยู่ตอนนี้ ถูก Deploy ผ่านระบบนี้ทั้งหมด
+                        </div>
+                        <ul class="project-highlights">
+                            <li>สร้างเซิร์ฟเวอร์จำลอง 3 ตัว (Gateway, Web, DB) อัตโนมัติด้วย Vagrant</li>
+                            <li>ตั้งค่า WireGuard VPN เข้ารหัสลับ พร้อมสร้าง Key อัตโนมัติด้วย Ansible</li>
+                            <li>ตั้งค่า NAT Routing & IP Forwarding ให้ Gateway ทำหน้าที่เป็น Router</li>
+                            <li>ติดตั้ง Nginx และ PostgreSQL อัตโนมัติผ่าน Ansible Roles</li>
+                            <li>ตั้งค่า Firewall (UFW) แบบ Least Privilege — DB เปิดพอร์ตให้เฉพาะ Web Server เท่านั้น</li>
+                        </ul>
+                    </div>
+
+                    <div class="card-title" style="font-size: 1.1rem; border-bottom: none; margin-bottom: 0.5rem; margin-top: 0.5rem;">
+                        💻 แผนผังเครือข่าย <span class="en">— Network Topology</span>
+                    </div>
+                    <div class="topology-box">
+┌─────────────────────────────────────────────────────────┐
+│              [ Host / นักพัฒนา ]                        │
+│                       │                                 │
+│            WireGuard VPN Tunnel (เข้ารหัส)              │
+│                 IP: 10.8.0.2                            │
+│                       ▼                                 │
+│        ┌──────────────────────────────┐                 │
+│        │  Gateway / VPN Server       │                 │
+│        │  WAN: 192.168.56.10         │                 │
+│        │  LAN: 10.0.0.1             │                 │
+│        │  VPN: 10.8.0.1             │                 │
+│        └──────────┬───────────────────┘                 │
+│                   │                                     │
+│         ┌─────────┴─────────┐                           │
+│         ▼                   ▼                           │
+│  ┌─────────────┐    ┌─────────────┐                     │
+│  │ Web Server  │    │ DB Server   │                     │
+│  │ 10.0.0.11   │    │ 10.0.0.12   │                     │
+│  │ Nginx :80   │    │ Postgres    │                     │
+│  │             │───▸│ :5432 🔒    │                     │
+│  └─────────────┘    └─────────────┘                     │
+│                     เฉพาะ Web เข้าถึงได้                │
+└─────────────────────────────────────────────────────────┘</div>
+                </section>
+
+                <!-- การศึกษาและประสบการณ์ -->
+                <section class="card">
+                    <div class="card-title">📖 การศึกษาและประสบการณ์ <span class="en">— Education</span></div>
+                    <div class="timeline-item">
+                        <div class="timeline-title">ปริญญาตรี วิทยาการคอมพิวเตอร์</div>
+                        <div class="timeline-sub">แทร็กเครือข่าย (Network Track)</div>
+                    </div>
+                    <div class="timeline-item purple">
+                        <div class="timeline-title">โปรเจกต์ส่วนตัว & Homelab</div>
+                        <div class="timeline-sub">
+                            ศึกษาและลงมือปฏิบัติจริงในด้าน Automation (Ansible), 
+                            Virtualization (VirtualBox), Networking (Routing, VPN, Firewall),
+                            และ Version Control (Git & GitHub)
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ====== Right Column ====== -->
+            <div>
+
+                <!-- ทักษะ -->
+                <section class="card">
+                    <div class="card-title">🛠️ ทักษะ <span class="en">— Tech Stack</span></div>
+
+                    <div class="skill-category">Infrastructure & IaC</div>
+                    <div class="skills-container">
+                        <span class="skill-tag">Vagrant</span>
+                        <span class="skill-tag">Ansible</span>
+                        <span class="skill-tag">VirtualBox</span>
+                    </div>
+
+                    <div class="skill-category">Networking & Security</div>
+                    <div class="skills-container">
+                        <span class="skill-tag">WireGuard VPN</span>
+                        <span class="skill-tag">iptables / UFW</span>
+                        <span class="skill-tag">NAT / Routing</span>
+                        <span class="skill-tag">TCP/IP</span>
+                    </div>
+
+                    <div class="skill-category">Services & OS</div>
+                    <div class="skills-container">
+                        <span class="skill-tag">Linux / Ubuntu</span>
+                        <span class="skill-tag">Nginx</span>
+                        <span class="skill-tag">PostgreSQL</span>
+                    </div>
+
+                    <div class="skill-category">Tools</div>
+                    <div class="skills-container">
+                        <span class="skill-tag">Git / GitHub</span>
+                        <span class="skill-tag">Bash / Shell</span>
+                    </div>
+                </section>
+
+                <!-- ความปลอดภัย -->
+                <section class="card">
+                    <div class="card-title">🔐 ความปลอดภัย <span class="en">— Security Audit</span></div>
+                    <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1rem;">
+                        ระบบเครือข่ายในโปรเจกต์นี้ได้รับการตั้งค่าความปลอดภัยทุกระดับ:
+                    </p>
+                    <ul class="security-list">
+                        <li>Database พอร์ต 5432 ถูกบล็อกจากภายนอก อนุญาตเฉพาะ Web Server</li>
+                        <li>เซิร์ฟเวอร์ภายในไม่มี Public IP — ไม่สามารถเข้าถึงจากอินเทอร์เน็ตโดยตรง</li>
+                        <li>การเข้าถึงระบบทั้งหมดต้องผ่าน WireGuard VPN ที่เข้ารหัสลับ</li>
+                        <li>Firewall (UFW) ตั้งค่าแบบ Deny All แล้วเปิดเฉพาะพอร์ตที่จำเป็น</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            เว็บไซต์นี้ถูก Deploy อัตโนมัติผ่าน <span>Ansible</span> บนเซิร์ฟเวอร์ที่สร้างด้วย <span>Vagrant</span> 
+            และเข้าถึงผ่าน <span>WireGuard VPN</span>
+        </footer>
+    </div>
+</body>
+</html>

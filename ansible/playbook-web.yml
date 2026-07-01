@@ -1,0 +1,9 @@
+---
+# รันคอนฟิกเครื่อง Web Server
+- name: Setup Web Server
+  hosts: all
+  connection: local
+  become: true
+  roles:
+    - common
+    - webserver

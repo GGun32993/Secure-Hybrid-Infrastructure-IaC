@@ -1,0 +1,60 @@
+---
+# ติดตั้ง PostgreSQL
+- name: Install PostgreSQL
+  apt:
+    name:
+      - postgresql
+      - postgresql-contrib
+    state: present
+
+# เริ่มใช้งาน Postgres
+- name: Start PostgreSQL
+  systemd:
+    name: postgresql
+    state: started
+    enabled: yes
+
+# คอนฟิกให้รับการเชื่อมต่อจากวงแลนภายนอก
+- name: Listen on all interfaces
+  lineinfile:
+    path: /etc/postgresql/14/main/postgresql.conf
+    regexp: "^#?listen_addresses\\s*="
+    line: "listen_addresses = '*'"
+  notify: restart postgresql
+
+# อนุญาตให้เฉพาะเครื่องเว็บ (10.0.0.11) เชื่อมฐานข้อมูลได้
+- name: Allow Web Server to connect
+  lineinfile:
+    path: /etc/postgresql/14/main/pg_hba.conf
+    line: "host    all             all             10.0.0.11/32            scram-sha-256"
+  notify: restart postgresql
+
+# ตั้งค่าบล็อกทราฟฟิกภายนอก
+- name: Set UFW default to deny
+  ufw:
+    direction: incoming
+    policy: deny
+  notify: restart ufw
+
+# เปิดพอร์ต SSH
+- name: Allow SSH
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+
+# อนุญาตพอร์ตฐานข้อมูลจากไอพีเครื่องเว็บเท่านั้น
+- name: Allow PostgreSQL only from Web Server
+  ufw:
+    rule: allow
+    port: '5432'
+    proto: tcp
+    from_ip: '10.0.0.11'
+
+# อนุญาตพอร์ต Node Exporter จาก Gateway เท่านั้น
+- name: Allow Node Exporter from Gateway
+  ufw:
+    rule: allow
+    port: '9100'
+    proto: tcp
+    from_ip: '10.0.0.1'
